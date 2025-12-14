@@ -1,0 +1,277 @@
+{
+  "datasets": [
+    {
+      "name": "931eb370",
+      "displayName": "QQ1",
+      "queryLines": [
+        "SELECT \r\n",
+        "  payment_method,\r\n",
+        "  COUNT(*) as count,\r\n",
+        "  ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM your_table), 2) as percentage\r\n",
+        "FROM your_table \r\n",
+        "WHERE payment_method IS NOT NULL\r\n",
+        "GROUP BY payment_method\r\n",
+        "ORDER BY count DESC;"
+      ],
+      "catalog": "my_catalog",
+      "schema": "my_schema"
+    },
+    {
+      "name": "92fcdbe2",
+      "displayName": "QQ2",
+      "queryLines": [
+        "SELECT \r\n",
+        "  vehicle_type,\r\n",
+        "  COUNT(*) as total_rides,\r\n",
+        "  SUM(CASE WHEN booking_status = 'Completed' THEN 1 ELSE 0 END) as completed_rides,\r\n",
+        "  ROUND(\r\n",
+        "    SUM(CASE WHEN booking_status = 'Completed' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), \r\n",
+        "    2\r\n",
+        "  ) as success_rate\r\n",
+        "FROM your_table \r\n",
+        "GROUP BY vehicle_type\r\n",
+        "ORDER BY success_rate DESC;"
+      ],
+      "catalog": "my_catalog",
+      "schema": "my_schema"
+    }
+  ],
+  "pages": [
+    {
+      "name": "5ed9d6ca",
+      "displayName": "Q1",
+      "layout": [
+        {
+          "widget": {
+            "name": "4ecaab21",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "931eb370",
+                  "fields": [
+                    {
+                      "name": "sum(count)",
+                      "expression": "SUM(`count`)"
+                    },
+                    {
+                      "name": "payment_method",
+                      "expression": "`payment_method`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(count)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "payment_method",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showDescription": true,
+                "description": "Q1\n",
+                "title": "Payment Method Distribution",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "9d46b24d",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "92fcdbe2",
+                  "fields": [
+                    {
+                      "name": "avg(success_rate)",
+                      "expression": "AVG(`success_rate`)"
+                    },
+                    {
+                      "name": "vehicle_type",
+                      "expression": "`vehicle_type`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "avg(success_rate)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "vehicle_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "frame": {
+                "title": "Success Rate by Vehicle Type",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 3,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "4866093b",
+      "displayName": "Q2",
+      "layout": [
+        {
+          "widget": {
+            "name": "869a4f95",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "92fcdbe2",
+                  "fields": [
+                    {
+                      "name": "vehicle_type",
+                      "expression": "`vehicle_type`"
+                    },
+                    {
+                      "name": "sum(completed_rides)",
+                      "expression": "SUM(`completed_rides`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "vehicle_type",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(completed_rides)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "frame": {
+                "title": "Completed Rides by Vehicle Type",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "a6889461",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "92fcdbe2",
+                  "fields": [
+                    {
+                      "name": "vehicle_type",
+                      "expression": "`vehicle_type`"
+                    },
+                    {
+                      "name": "sum(total_rides)",
+                      "expression": "SUM(`total_rides`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "vehicle_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_rides)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "frame": {
+                "title": "Total Rides by Vehicle Type",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 3,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
